@@ -9,8 +9,9 @@ Sufia.config do |config|
   config.max_days_between_audits = 7
 
   config.max_notifications_for_dashboard = 5
-
-  config.cc_licenses = {
+  
+  # this is the list of licenses a user can choose when adding or editing a work
+  config.cc_licenses_active = {
     'Attribution 4.0 International' => 'http://creativecommons.org/licenses/by/4.0/',
     'Attribution-ShareAlike 4.0 International' => 'http://creativecommons.org/licenses/by-sa/4.0/',
     'Attribution-NonCommercial 4.0 International' => 'http://creativecommons.org/licenses/by-nc/4.0/',
@@ -22,7 +23,16 @@ Sufia.config do |config|
     "I am required to use/link to a publisher's license" => "I am required to use/link to a publisher's license",
   }
 
-  config.cc_licenses_reverse = Hash[*config.cc_licenses.to_a.flatten.reverse]
+  # these are licenses that, in addition to the above, also appear on migrated objects
+  # and need to be linked to externally in the license show partial. See issue #561 for context
+  config.cc_licenses_all = config.cc_licenses_active.merge({
+    'Creative Commons Attribution 3.0 Unported' => 'https://creativecommons.org/licenses/by/3.0/',
+    'Creative Commons Attribution-Non-Commercial 3.0 Unported' => 'https://creativecommons.org/licenses/by-nc/3.0/',
+    'Creative Commons Attribution-Non-Commercial-No Derivatives 3.0 Unported' => 'https://creativecommons.org/licenses/by-nc-nd/3.0/',
+    'Creative Commons Zero Waiver' => 'http://creativecommons.org/publicdomain/zero/1.0/'
+  })
+
+  config.cc_licenses_reverse = Hash[*config.cc_licenses_all.to_a.flatten.reverse]
 
   config.resource_types = {
     "Book" => "Book",
@@ -89,8 +99,10 @@ Sufia.config do |config|
   # please run rake db:seed to create the collections and restart httpd. 
   # The collection IDs will be added here
   # In production it assumes that the collections will be available in the system at the time of deposit
-  # config.cstr_collection_id = ""
-  # config.ser_collection_id = ""
+
+
+  config.cstr_collection_id = "hq37vn63r"
+  config.ser_collection_id = "hq37vn641"
   config.special_types = {
     "cstr" => "Computing Science Technical Report",
     "ser" => "Structural Engineering Report",
