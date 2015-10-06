@@ -415,7 +415,8 @@ namespace :migration do
       user = relsext_version.at_xpath("userns:userId", NS).text() if relsext_version.at_xpath("userns:userId", NS)
       submitter = relsext_version.at_xpath("userns:submitterId", NS).text() if relsext_version.at_xpath("userns:submitterId", NS)
       is_part_of = relsext_version.xpath("memberof:isPartOf/@rdf:resource", NS).text() if relsext_version.at_xpath("memberof:isPartOf/@rdf:resource", NS)
-
+      
+      embargo = relsext_version.xpath("userns:embargoedDate",NS).text() if relsext_version.at_path("userns:embargoedDate", NS)
       #download the original foxml
       MigrationLogger.info "Download the original foxml #{uuid}"
       foxml_url = DOWNLOAD_URL + "item/" + uuid +"/fo.xml"
@@ -520,13 +521,23 @@ namespace :migration do
       file_attributes = {"resource_type"=>[type], "contributor"=>contributors, "description"=>[description], "date_created"=>date, "year_created"=>year_created, "license"=>license, "rights"=>rights, "subject"=>subjects, "spatial"=>spatials, "temporal"=>temporals, "language"=>LANG.fetch(language), "fedora3uuid"=>uuid, "fedora3handle" => fedora3handle, "trid" => trid, "ser" => ser, "abstract" => abstract, "date_accepted" => date_accepted, "date_submitted" => date_submitted, "is_version_of" => is_version_of, "graduation_date" => graduation_date, "specialization" => specialization, "supervisor" => supervisors, "committee_member" => committee_members, "department" => departments, "thesis_name" => thesis_name, "thesis_level" => thesis_level, "alternative_title" => alternative_titles, "proquest" => proquest, "unicorn" => unicorn, "degree_grantor" => degree_grantor, "dissertant" => dissertant,  "ingestbatch" => @ingest_batch_id, "belongsToCommunity" => communities_noid, "hasCollectionId" => collections_noid, "hasCollection" => collections_title}
       @generic_file.attributes = file_attributes
 
-      @generic_file.visibility = case is_part_of
-      when 'info:fedora/ir:DARK_REPOSITORY'
-        Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-      when 'info:fedora/ir:CCID_AUTH'
-        Hydranorth::AccessControls::InstitutionalVisibility::UNIVERSITY_OF_ALBERTA
+      if is_part_of == "info:fedora/ir:EMBARGOED" and !embargo.nil?
+        begin
+          embargo_date = Time.parse(embargo).strftime('%Y-%m-%d')
+        rescue
+          MigrationLogger.info "Date was not parsed and raised error"
+          next
+        end
+        @generic_file.apply_embargo(embargo_date, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE,Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC)
       else
-        Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+        @generic_file.visibility = case is_part_of
+        when 'info:fedora/ir:DARK_REPOSITORY'
+          Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+        when 'info:fedora/ir:CCID_AUTH'
+          Hydranorth::AccessControls::InstitutionalVisibility::UNIVERSITY_OF_ALBERTA
+        else
+          Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+        end
       end
 
       if !permissions_attributes.blank?

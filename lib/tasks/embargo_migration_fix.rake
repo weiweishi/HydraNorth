@@ -23,12 +23,22 @@ def fix_embargo(embargo_file)
   embargos = CSV.parse(File.read(embargo_file))
   embargos.each do |row|
     uid = row[0]
-    embargo_date = row[1] 
-    gf = GenericFile.where(Solrizer.solr_name("fedora3uuid", :stored_searchable, type: :string) => uid)
-    gf.visibilty = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
-    gf.visibility_during_embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-    gf.visibility_after_embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-    gf.embargo_release_date = embargo_date
+    begin
+      embargo_date = Time.parse(row[1]).strftime('%Y-%m-%d')
+    rescue
+      MigrationLogger.info "Date was not parsed and raised error"
+      next
+    end
+
+    solr_rsp =  ActiveFedora::SolrService.instance.conn.get 'select', :params => {:q => Solrizer.solr_name('fedora3uuid')+':'+uid}
+    gf = GenericFile.find(solr_rsp['response']['docs'].first['id'])
+
+    unless gf.fedora3uuid == uid
+      MigrationLogger.info "Mismatch uuid: #{uid} vs #{gf.fedora3uuid}"
+      next
+    end
+
+    gf.apply_embargo(embargo_date,Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE,Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC)
 
     # save the file
     MigrationLogger.info "Save the file"
@@ -38,12 +48,11 @@ def fix_embargo(embargo_file)
     rescue RSolr::Error::Http => error
       ActiveFedora::Base.logger.warn "Sufia::GenericFile::Actor::save_and_record_committer Caught RSOLR error #{error.inspect}"
       MigrationLogger.warn "ERROR #{error.inspect} when saving the file #{uuid}"
-              save_tries+=1
-    # fail for good if the tries is greater than 3
-    raise error if save_tries >=3
-      sleep 0.01
-      retry
+      save_tries+=1
+      # fail for good if the tries is greater than 3
+      raise error if save_tries >=3
+        sleep 0.01
+        retry
     end
-  
   end
 end
