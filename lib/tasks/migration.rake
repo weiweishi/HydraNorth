@@ -416,7 +416,7 @@ namespace :migration do
       submitter = relsext_version.at_xpath("userns:submitterId", NS).text() if relsext_version.at_xpath("userns:submitterId", NS)
       is_part_of = relsext_version.xpath("memberof:isPartOf/@rdf:resource", NS).text() if relsext_version.at_xpath("memberof:isPartOf/@rdf:resource", NS)
       
-      embargo = relsext_version.xpath("userns:embargoedDate",NS).text() if relsext_version.at_path("userns:embargoedDate", NS)
+      embargo = relsext_version.xpath("userns:embargoedDate",NS).text() if relsext_version.at_xpath("userns:embargoedDate", NS)
       #download the original foxml
       MigrationLogger.info "Download the original foxml #{uuid}"
       foxml_url = DOWNLOAD_URL + "item/" + uuid +"/fo.xml"
