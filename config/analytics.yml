@@ -9,8 +9,8 @@
 #   client_email: GOOGLE_OAUTH_CLIENT_EMAIL
 
 analytics:
-  app_name: My App Name
+  app_name: hydranorth 
   app_version: 0.0.1
-  privkey_path: /tmp/privkey.p12
-  privkey_secret: s00pers3kr1t
-  client_email: oauth@example.org
+  privkey_path: tmp/f3f464f1a190.p12
+  privkey_secret: notasecret
+  client_email: 439421250272-tl9o380kihr17lhop55rl1hrppeh46us@developer.gserviceaccount.com
