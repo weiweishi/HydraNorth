@@ -150,7 +150,6 @@ module Features
       fill_in 'Email', with: user.email
       fill_in 'Password', with: user.password
       click_button I18n.t('sufia.sign_in')
-      expect(page).not_to have_text 'Invalid email or password.'
     end
   end
 end
