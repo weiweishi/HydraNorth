@@ -154,3 +154,30 @@ module Features
     end
   end
 end
+
+
+# swizzle ActiveFedora::Base#save so that it only writes to solr
+# if the object is marked skip_fedora
+class ActiveFedora::Base
+  alias_method :old_save!, :save!
+
+  def skip_fedora; @skip_fedora = true; self; end
+
+  def skip_fedora?
+    @skip_fedora ||= false
+  end
+
+  def fake_id
+    $fake_id ||= 0
+    $fake_id += 1
+  end
+
+  def save!
+    return old_save! unless skip_fedora?
+    self.id ||= fake_id
+    self.run_callbacks(:save)
+    ActiveFedora::SolrService.add(self.to_solr, softCommit: true)
+  end
+
+  def save; save! rescue false; end
+end
