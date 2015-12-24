@@ -168,16 +168,24 @@ class ActiveFedora::Base
   end
 
   def fake_id
-    $fake_id ||= 0
-    $fake_id += 1
+    @@fake_id ||= 0
+    @@fake_id += 1
   end
 
-  def save!
-    return old_save! unless skip_fedora?
+  def save!(*args)
+    return old_save!(*args) unless skip_fedora?
     self.id ||= fake_id
     self.run_callbacks(:save)
     ActiveFedora::SolrService.add(self.to_solr, softCommit: true)
   end
 
-  def save; save! rescue false; end
+  def save(*args); save!(*args) rescue false; end
+end
+
+module CleanerHelper
+  def cleanup_jetty
+    ActiveFedora::Base.delete_all rescue nil
+    Blacklight.solr.delete_by_query("*:*")
+    Blacklight.solr.commit
+  end
 end
