@@ -109,6 +109,7 @@ module EngineRoutes
   def self.included(base)
     base.routes { Sufia::Engine.routes }
   end
+
   def main_app
     Rails.application.class.routes.url_helpers
   end
@@ -133,12 +134,14 @@ end
   config.after(:each, type: :feature) { Warden.test_reset! }
   config.infer_spec_type_from_file_location!
 end
+
 module FactoryGirl
   def self.find_or_create(handle, by=:email)
     tmpl = FactoryGirl.build(handle)
     tmpl.class.send("find_by_#{by}".to_sym, tmpl.send(by)) || FactoryGirl.create(handle)
   end
 end
+
 # spec/support/features/session_helpers.rb
 module Features
   module SessionHelpers
@@ -160,6 +163,16 @@ end
 # if the object is marked skip_fedora
 class ActiveFedora::Base
   alias_method :old_save!, :save!
+
+  class << self
+    alias_method :old_delete_all, :delete_all
+
+    def delete_all
+#      binding.pry
+      old_delete_all rescue nil
+    end
+  end
+
 
   def skip_fedora; @skip_fedora = true; self; end
 
@@ -184,6 +197,7 @@ end
 
 module CleanerHelper
   def cleanup_jetty
+#    binding.pry
     ActiveFedora::Base.delete_all rescue nil
     Blacklight.solr.delete_by_query("*:*")
     Blacklight.solr.commit
