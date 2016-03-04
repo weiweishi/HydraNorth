@@ -32,9 +32,9 @@
                    <% end %>
     <% if current_user.admin? %>
 <td>
-      <%= link_to raw('<i class="glyphicon glyphicon-trash" aria-hidden="true"></i> Delete User'), sufia.profile_path(user),
-      class: 'itemicon itemtrash', title: 'Delete User', method: :delete, data: {
-      confirm: "Deleting a user from #{t('sufia.product_name')} is permanent. Click OK to delete this user from #{t('sufia.product_name')}, or Cancel to cancel this operation" } %>
+      <%= link_to raw('<i class="glyphicon glyphicon-trash" aria-hidden="true"></i>'), sufia.profile_path(user),
+      class: 'itemicon itemtrash', title: "Delete User: #{user.user_key}", method: :delete, data: {
+      confirm: "Deleting a user from #{t('sufia.product_name')} is permanent. Click OK to delete user #{user.user_key} from #{t('sufia.product_name')}, or Cancel to cancel this operation" } %>
 </td>
     <% end %>
                 </tr> 

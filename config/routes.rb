@@ -37,6 +37,8 @@ Hydranorth::Application.routes.draw do
   # redirect ark to hydranorth
   get '/id/:arkid' => 'redirect#ark', :constraints => { :arkid => /ark:\/\d{5}\/.*/ }
 
+ delete 'users/:id' => 'users#destroy'
+
   scope :dashboard do
 
     get '/files',             controller: 'my/files', action: :index, as: 'dashboard_files'
