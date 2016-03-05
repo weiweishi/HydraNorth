@@ -1,5 +1,8 @@
 <div id="search" class="row">
 <%= render partial: 'search_form' %>
+    <div class="front-alert">
+      <%= render partial: '/flash_msg' %>
+    </div>
 <h1><%= t('sufia.product_name') %> Users</h1>
 </div>
 <div id="Data">
@@ -34,7 +37,7 @@
 <td>
       <%= link_to raw('<i class="glyphicon glyphicon-trash" aria-hidden="true"></i>'), sufia.profile_path(user),
       class: 'itemicon itemtrash', title: "Delete User: #{user.user_key}", method: :delete, data: {
-      confirm: "Deleting a user from #{t('sufia.product_name')} is permanent. Click OK to delete user #{user.user_key} from #{t('sufia.product_name')}, or Cancel to cancel this operation" } %>
+      confirm: "Deleting a user from #{t('sufia.product_name')} is permanent. Click OK to delete user \"#{user.user_key}\" from #{t('sufia.product_name')}, or Cancel to cancel this operation" } %>
 </td>
     <% end %>
                 </tr> 

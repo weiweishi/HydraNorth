@@ -10,8 +10,9 @@ class UsersController < ApplicationController
 
   def destroy
     @user = User.from_url_component(params[:id])
+    @email = @user.email
     @user.destroy    
-    flash[:success] = "User deleted"
+    flash[:notice] = "User \"#{@email}\" deleted"
     redirect_to '/users' 
   end
 
