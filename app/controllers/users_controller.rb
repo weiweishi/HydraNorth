@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   include Hydranorth::UsersControllerBehavior
+  include Sufia::SufiaHelperBehavior
 
   skip_before_filter :force_account_link, only: [:link_account, :set_saml]
 
@@ -9,10 +10,18 @@ class UsersController < ApplicationController
   end
 
   def destroy
+# TODO 
+# - logout any sessions of this user
+
     @user = User.from_url_component(params[:id])
     @email = @user.email
-    @user.destroy    
-    flash[:notice] = "User \"#{@email}\" deleted"
+    if number_of_deposits(@user) == 0
+      @user.destroy    
+      flash[:notice] = "User \"#{@email}\" deleted"
+    else
+      flash[:error] = "User \"#{@email}\" cannot be deleted, since s/he has deposited items"
+    end
+# TODO specify path properly
     redirect_to '/users' 
   end
 
