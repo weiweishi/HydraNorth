@@ -1,4 +1,5 @@
 require 'spec_helper'
+include Sufia::SufiaHelperBehavior
 
 describe UsersController, :type => :controller do
   let(:admin) { FactoryGirl.create :admin }
@@ -65,6 +66,26 @@ describe UsersController, :type => :controller do
         get :index, format: :json
         expect(assigns[:users]).to include(user)
         expect(assigns[:users]).to_not include(admin)
+      end
+    end
+  end
+
+  describe "#destroy" do
+    let(:deletable) { FactoryGirl.create :alice }
+    before(:each) do
+      sign_in admin
+    end
+    describe "destroying users" do
+      it "should not delete user with GenericFiles" do
+        @generic_file = GenericFile.create { |gf| 
+          gf.apply_depositor_metadata(user) 
+        }
+        expect( number_of_deposits(user) ).to eq(1)
+        expect { user.destroy }.not_to change(User, :count)  
+      end
+      it "should delete user without GenericFiles" do
+        expect( number_of_deposits(deletable) ).to eq(0)
+        expect { deletable.destroy }.to change(User, :count).by(-1)
       end
     end
   end

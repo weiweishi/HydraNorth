@@ -11,6 +11,11 @@ describe 'user' do
       expect(page).to_not have_content "Permission denied: cannot access this page."
       expect(page).to have_content user
     end
+    it 'should allow admin to delete user' do
+      sign_in admin
+      visit '/users/'
+      expect(page).to have_link 'Delete User: jilluser@example.com' 
+    end
   end
   context 'user logged in' do
     it 'should not allow user to visit user index' do
