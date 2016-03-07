@@ -10,10 +10,6 @@ class UsersController < ApplicationController
   end
 
   def destroy
-# TODO 
-# - logout any sessions of this user
-
-    @user = User.from_url_component(params[:id])
     @email = @user.email
     if number_of_deposits(@user) == 0
       @user.destroy    
@@ -21,8 +17,7 @@ class UsersController < ApplicationController
     else
       flash[:error] = "User \"#{@email}\" cannot be deleted, since s/he has deposited items"
     end
-# TODO specify path properly
-    redirect_to '/users' 
+    redirect_to '/users/' 
   end
 
   def user_is_current_user
