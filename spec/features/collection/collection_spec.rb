@@ -42,7 +42,6 @@ describe 'collection', :type => :feature do
 
     it "should have following features" do
       expect(page).to have_link('View Communities')
-      expect(page).to have_button('Description')
       expect(page).to have_content(community.description)
       expect(page).to have_content('Collections and items in this Community')
       expect(page).to have_content("Download")
@@ -64,37 +63,86 @@ describe 'collection', :type => :feature do
       end
     end
 
-    let!(:collection) do
-      Collection.create( title: 'Test Collection' ) do |c|
+    let!(:collection1) do
+      Collection.create( title: 'Test Collection 1' ) do |c|
         c.apply_depositor_metadata(jill.user_key)
-        c.description = "Collection Description"
+        c.description = "Collection Description 1"
       end
     end
 
-    let!(:public_file) do
-      GenericFile.create( title: ['Test Item'], read_groups: ['public'] ) do |g|
+    let!(:collection2) do
+      Collection.create( title: 'Test Collection 2' ) do |c|
+        c.apply_depositor_metadata(jill.user_key)
+        c.description = "Collection Description 2"
+      end
+    end
+
+    let!(:public_file1) do
+      GenericFile.create( title: ['Test Item 1'], read_groups: ['public'] ) do |g|
         g.resource_type = ["Book"]
         g.apply_depositor_metadata(jill.user_key)
-        g.resource_type = ["Book"]
+        g.subject = ["subject 1"]
         g.belongsToCommunity = [community.id]
-        g.hasCollectionId = [collection.id]
+        g.hasCollectionId = [collection1.id]
+      end
+    end
+
+    let!(:public_file2) do
+      GenericFile.create( title: ['Test Item 2'], read_groups: ['public'] ) do |g|
+        g.resource_type = ["Book"]
+        g.apply_depositor_metadata(jill.user_key)
+        g.subject = ["subject 2"]
+        g.belongsToCommunity = [community.id]
+        g.hasCollectionId = [collection1.id]
+      end
+    end
+
+    let!(:public_file3) do
+      GenericFile.create( title: ['Test Item 3'], read_groups: ['public'] ) do |g|
+        g.resource_type = ["Book"]
+        g.apply_depositor_metadata(jill.user_key)
+        g.subject = ["subject 3"]
+        g.belongsToCommunity = [community.id]
+        g.hasCollectionId = [collection1.id]
+      end
+    end
+
+    let!(:public_file4) do
+      GenericFile.create( title: ['Test Item 4'], read_groups: ['public'] ) do |g|
+        g.resource_type = ["Book"]
+        g.apply_depositor_metadata(jill.user_key)
+        g.subject = ["subject 4"]
+        g.belongsToCommunity = [community.id]
+        g.hasCollectionId = [collection1.id]
+      end
+    end
+
+    let!(:public_file5) do
+      GenericFile.create( title: ['Test Item 5'], read_groups: ['public'] ) do |g|
+        g.resource_type = ["Book"]
+        g.apply_depositor_metadata(jill.user_key)
+        g.subject = ["subject 5"]
+        g.belongsToCommunity = [community.id]
+        g.hasCollectionId = [collection2.id]
       end
     end
 
     before do
-      visit "/collections/#{collection.id}"
+      visit "/collections/#{collection1.id}"
     end
 
     it "should have following features" do
-      expect(page).to have_button('Description')
       expect(page).to have_content(collection.description)
       expect(page).to have_content('Items in this Collection')
-      expect(page).to have_content("Download")
       expect(page).to have_css("input#collection_search")
-      expect(page).to have_content("Item Type")
       within("#facets") do
         within("#facet-resource_type_sim") do
           expect(page).to have_content("Book")
+        end
+        within("#facet-subject_sim") do
+          find("a.more_facets_link").click
+          expect(page).to have_content("subject 1")          
+          expect(page).not_to have_content("subject 5")
         end
       end
     end

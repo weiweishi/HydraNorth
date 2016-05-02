@@ -6,14 +6,8 @@
     <div class="col-sm-10 pull-right">
       <header>
         <h1><%= @presenter.title %></h1>
-        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#description">Description</button>
-        <div id="description" class="collapse">
-          <%= sanitize @presenter.description %>
-        </div>
+        <%= sanitize @presenter.description %>
       </header>
-      <% unless has_collection_search_parameters? %>
-      <%= render 'collections/show_descriptions' %>
-      <% end %>
     </div>
     <div class="col-sm-2">
       <%= render partial: 'collections/media_display', locals: { generic_file: @collection } %> 
@@ -28,14 +22,8 @@
     <div>
       <header>
         <h1><%= @presenter.title %></h1>
-        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#description">Description</button>
-        <div id="description" class="collapse">
-          <%= sanitize @presenter.description %>
-        </div>
+        <%= sanitize @presenter.description %>
       </header>
-      <% unless has_collection_search_parameters? %>
-      <%= render 'collections/show_descriptions' %>
-      <% end %>
     </div>
     <div>
       <% unless has_collection_search_parameters? %>
@@ -44,6 +32,8 @@
     </div>
   </div>
 <% end %>
+
+<%= render 'sort_and_per_page' %>
 
 <% if @collection.is_community == true or @collection.is_community == "true" %>
   <% if has_collection_search_parameters? %>
@@ -84,15 +74,13 @@
   <% if current_user.admin? %>
     <%= render partial: 'show_document_list' %>
 
-  <% else %>a
+  <% else %>
     <div id="sidebar" class="col-md-3 col-sm-4">
       <%= render 'facets' %>
     </div>
 
     <div id="content" class="col-md-9 col-sm-8">
-      <div id="content" class="col-md-9 col-sm-8">
-        <%= render 'search_results' %>
-      </div>
+      <%= render 'search_results' %>
     </div>
   <% end %>
 <% end %>
