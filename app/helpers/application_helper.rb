@@ -6,7 +6,9 @@ module ApplicationHelper
   end
 
   def render_checked_constraints(localized_params = params)
-    localized_params.tap{|d| d[:f].tap{|h| h.delete("hasCollectionId_ssim")}}
+    if localized_params[:f] and localized_params[:f][:hasCollectionId_ssim]
+      localized_params.tap{|d| d[:f].tap{|h| h.delete("hasCollectionId_ssim")}}
+    end
     render_constraints_query(localized_params) + render_constraints_filters(localized_params)
   end
 
