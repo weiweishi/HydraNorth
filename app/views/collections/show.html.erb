@@ -11,8 +11,10 @@
     </div>
     <div class="col-sm-2">
       <%= render partial: 'collections/media_display', locals: { generic_file: @collection } %> 
-      <% unless has_collection_search_parameters? %>
-      <%= render partial: 'collections/show_actions' %>
+      <% if !current_user.nil? %>
+        <% if current_user.admin? %>
+          <%= render partial: 'collections/show_actions' %>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -26,8 +28,10 @@
       </header>
     </div>
     <div>
-      <% unless has_collection_search_parameters? %>
-      <%= render partial: 'collections/show_actions' %>
+      <% if !current_user.nil? %>
+        <% if current_user.admin? %>
+          <%= render partial: 'collections/show_actions' %>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -80,7 +84,7 @@
     </div>
 
     <div id="content" class="col-md-9 col-sm-8">
-      <%= render 'search_results' %>
+      <%= render 'document_list' %>
     </div>
   <% end %>
 <% end %>
