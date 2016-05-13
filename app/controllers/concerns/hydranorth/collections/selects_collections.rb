@@ -1,5 +1,6 @@
 module Hydranorth::Collections::SelectsCollections
   extend ActiveSupport::Concern
+  # shouldn't this be Sufia::Catalog? We're all over the place with includes
   include Blacklight::Catalog
   include Hydra::Collections::SelectsCollections
   include Hydranorth::Permissions
