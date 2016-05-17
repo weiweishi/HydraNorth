@@ -13,6 +13,19 @@ module Hydranorth
       presenter
     end
 
+    def update
+  #    [1] {"_method"=>"put", "batch_document_ids"=>["vm40xr59d"], "collection"=>{"members"=>"add"}, "controller"=>"collections", "action"=>"update", "id"=>"ff365526h"}
+
+      if params['collection']['members'] == 'add'
+        parent = Collection.find(params['id'])
+        parent.add_member_ids(params['batch_document_ids'])
+        parent.save
+        redirect_to Hydra::Collections::Engine.routes.url_helpers.collection_path(parent)
+      else
+        super
+      end
+    end
+
     protected
 
     # override Sufia::CollectionsControllerBehavior#presenter to establish

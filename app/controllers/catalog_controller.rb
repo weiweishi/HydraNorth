@@ -13,14 +13,12 @@ class CatalogController < ApplicationController
   # This applies appropriate access controls to all solr queries
   CatalogController.search_params_logic += [:add_access_controls_to_solr_params, :add_advanced_parse_q_to_solr]
 
+  skip_before_filter :default_html_head
+
   def index
     @target_collections = admin_target_collections
     super
   end
-
-  skip_before_filter :default_html_head
-
-  helper_method :valid_target_collections
 
   def self.uploaded_field
     solr_name('date_uploaded', :stored_sortable, type: :date)

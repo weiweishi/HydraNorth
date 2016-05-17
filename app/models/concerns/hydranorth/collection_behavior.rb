@@ -144,11 +144,11 @@ module Hydranorth
     def add_member_ids(new_member_ids)
       return if new_member_ids.nil? || new_member_ids.size < 1
       member_collection = self.hasCollectionMember.dup + new_member_ids
-
+      binding.pry
       self.set_value(:hasCollectionMember, member_collection)
       new_member_ids.each do |id|
         new_member = ActiveFedora::Base.find(id)
-
+        binding.pry
         # if I'm community and new_member is a collection, update all its members
         if self.is_community?
           new_member.set_value(:belongsToCommunity, [self.id])
@@ -159,11 +159,13 @@ module Hydranorth
             end
           end
         else # I'm a collection
+          binding.pry
           new_member.set_value(:hasCollection, [self.title]) if new_member.respond_to? :hasCollection
           new_member.set_value(:hasCollectionId, [self.id]) if new_member.respond_to? :hasCollectionId
           new_member.set_value(:belongsToCommunity, self.belongsToCommunity) if self.belongsToCommunity?
         end
         new_member.save
+        binding.pry
       end
     end
 
