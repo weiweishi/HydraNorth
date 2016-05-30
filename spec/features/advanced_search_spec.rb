@@ -38,8 +38,46 @@ describe "Advanced search", :type => :feature do
       @community.delete
     end
     it "finds uuid" do
-      search("uuid:394266f0-0e4a-42e6-a199-158165226426")
+      search('all_fields', "uuid:394266f0-0e4a-42e6-a199-158165226426")
       expect(page).to have_content('Bison sculpture at the entrance to the USGS Ice Core Lab')
+    end
+  end
+
+  describe "Check thesis date search" do
+    before do
+      Collection.delete_all
+      @community = Collection.new(title:'FGSR').tap do |c|
+        c.apply_depositor_metadata('dittest@ualberta.ca')
+        c.is_community = true
+        c.is_official = true
+        c.fedora3uuid = 'uuid:39331f1f-769d-4c2a-a103-416c285d01fc'
+        c.save
+      end
+      @collection = Collection.new(title:'Theses').tap do |c|
+        c.apply_depositor_metadata('dittest@ualberta.ca')
+        c.is_official = true
+        c.fedora3uuid = 'uuid:7af76c0f-61d6-4ebc-a2aa-79c125480269'
+        c.save
+      end
+      GenericFile.delete_all
+      Rake::Task.define_task(:environment)
+      Rake::Task["migration:eraitem"].invoke('spec/fixtures/migration/test-metadata/thesis-metadata')
+      result = ActiveFedora::SolrService.instance.conn.get "select", params: {q:["fedora3uuid_tesim:uuid:0b19d1f5-399a-42b4-be0c-360010ef6784"]}
+      doc = result["response"]["docs"].first
+      id = doc["id"]
+      @file = GenericFile.find(id)
+
+    end
+    after do
+      Rake::Task["migration:eraitem"].reenable
+      @file.delete
+      @community.delete
+      @collection.delete
+    end
+
+    it "finds uuid" do
+      search('date_created', "2015")
+      expect(page).to have_content('This is a test thesis abstract.')
     end
   end
 
@@ -50,8 +88,8 @@ describe "Advanced search", :type => :feature do
     end
   end
 
-  def search(query="") 
-      fill_in('all_fields', with: query) 
+  def search(field="", query="") 
+      fill_in(field, with: query) 
       click_button("Search")
   end
 

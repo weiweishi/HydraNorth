@@ -199,12 +199,12 @@ class CatalogController < ApplicationController
       config.add_search_field('date_created') do |field|
         field.label = "Date"
         field.solr_parameters = {
-          :"spellcheck.dictionary" => "date_created"
+          :"spellcheck.dictionary" => "date_accepted"
         }
-        solr_name = Solrizer.solr_name("created", :stored_searchable)
+        field_included = Solrizer.solr_name("created", :stored_searchable)
         field.solr_local_parameters = {
-          qf: solr_name,
-          pf: solr_name
+          qf: "#{field_included} date_accepted_tesim",
+          pf: field_included
         }
       end
 
