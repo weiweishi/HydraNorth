@@ -41,6 +41,11 @@ describe "Advanced search", :type => :feature do
       search('all_fields', "uuid:394266f0-0e4a-42e6-a199-158165226426")
       expect(page).to have_content('Bison sculpture at the entrance to the USGS Ice Core Lab')
     end
+
+    it "finds date" do
+      search('date', "2012")
+      expect(page).to have_content('Bison sculpture at the entrance to the USGS Ice Core Lab')
+    end
   end
 
   describe "Check thesis date search" do
@@ -76,7 +81,7 @@ describe "Advanced search", :type => :feature do
     end
 
     it "finds uuid" do
-      search('date_created', "2015")
+      search('date', "2015")
       expect(page).to have_content('This is a test thesis abstract.')
     end
   end
