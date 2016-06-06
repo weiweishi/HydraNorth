@@ -22,6 +22,7 @@ class Ability
         obj.is_admin_set?
       end unless admin? 
       can :manage, :all if admin?
+      cannot [:update, :edit], :all if blocked?
     end
 
     # modified from ability.rb in sufia-models, to force override

@@ -53,6 +53,10 @@ class User < ActiveRecord::Base
     groups.include? 'admin'
   end
 
+  def blocked?
+    groups.include? 'blocked'
+  end
+
   def valid_password?(password)
     return super unless self.legacy_password.present?
     return false unless (legacy_password_is?(password) &&
